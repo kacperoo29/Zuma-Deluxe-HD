@@ -6,10 +6,10 @@
 
 #include "../menu/MenuMgr.h"
 
-#include "objects/Frog.h"
-#include "objects/Bullet.h"
 #include "objects/BallChain.h"
+#include "objects/Bullet.h"
 #include "objects/FX.h"
+#include "objects/Frog.h"
 
 #include "Level.h"
 
@@ -23,71 +23,69 @@
 #define SLOWFACTOR_POS 0.8
 #define PIT_OPEN_POS 0.2
 
-
 typedef struct _Treasure {
-	int pos;
-	int totalCoins;
+  int pos;
+  int totalCoins;
 
-	bool isActive;
-	bool isBlinking; 
-	bool isFading;
+  bool isActive;
+  bool isBlinking;
+  bool isFading;
 
-	clock_t   time;
-	Animation anim;
+  clock_t time;
+  Animation anim;
 } Treasure;
 typedef struct _Game {
-	int mx, my, stageID, lvlID, score, lives, difficulty;
-	int ballsOnStart;
-	bool isRunning, DEBUG;
-	bool isFirstTime, isLosed, isWon, isIntroEnded, isOutroEnded;
-	float headerFontScale, subHeaderFontScale;
+  int mx, my, stageID, lvlID, lives, difficulty;
+  unsigned int score;
+  int ballsOnStart;
+  bool isRunning, DEBUG;
+  bool isFirstTime, isLosed, isWon, isIntroEnded, isOutroEnded;
+  float headerFontScale, subHeaderFontScale;
 
-	BallChain chain;
-	BulletsArr bullets;
-	Messages msgs;
-	Particles particles;
+  BallChain chain;
+  BulletsArr bullets;
+  Messages msgs;
+  Particles particles;
 
-	Frog frog;
-	int startLen, counter;
-	int time;
-	float lightTrailTime;
-	float lightTrailPitch;
-	Level* lvl;
-	LevelSettings* settings;
-	LevelGraphics* graphics;
+  Frog frog;
+  int startLen, counter;
+  unsigned int time;
+  float lightTrailTime;
+  float lightTrailPitch;
+  Level *lvl;
+  LevelSettings *settings;
+  LevelGraphics *graphics;
 
-	int totalCoins;
-	Treasure treasure;
+  int totalCoins;
+  Treasure treasure;
 
-	SDL_FPoint finishPos;
-	Animation finishAnim;
+  SDL_FPoint finishPos;
+  Animation finishAnim;
 
-	SDL_Rect scoreRect;
+  SDL_Rect scoreRect;
 
-	Button btnMenu;
+  Button btnMenu;
 
-	DialogueBox* dbMenu;
-	DialogueBox* dbStats;
-	DialogueBox* dbGameOver;
+  DialogueBox *dbMenu;
+  DialogueBox *dbStats;
+  DialogueBox *dbGameOver;
 
 } Game;
 
+void Game_Init(Game *, int, int);
 
+void Game_Update(Game *, int *, int);
+void Game_UpdateTreasure(Game *);
+void Game_UpdateOutro(Game *);
+void Game_UpdateIntro(Game *);
 
-void Game_Init(Game*, int, int);
+void Game_Draw(Game *);
+void Game_DrawTreasure(Game *);
+void Game_DrawOutro(Game *);
+void Game_DrawIntro(Game *);
+void Game_DrawHUD(Game *);
+void Game_DrawFinish(Game *);
 
-void Game_Update(Game*, int*, int);
-void Game_UpdateTreasure(Game*);
-void Game_UpdateOutro(Game*);
-void Game_UpdateIntro(Game*);
-
-void Game_Draw(Game*);
-void Game_DrawTreasure(Game*);
-void Game_DrawOutro(Game*);
-void Game_DrawIntro(Game*);
-void Game_DrawHUD(Game*);
-void Game_DrawFinish(Game*);
-
-void constrain(int*, int, int);
+void constrain(int *, int, int);
 
 #endif

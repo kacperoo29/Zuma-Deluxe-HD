@@ -3,12 +3,11 @@
 
 #include <math.h>
 
+#include "../../global/Animation.h"
 #include "../../global/Engine.h"
 #include "../../global/Enums.h"
-#include "../../global/Animation.h"
 
 #include "../Level.h"
-
 
 #define FROG_CUR_BALL_PAD 35
 #define FROG_NEXT_BALL_PAD 40
@@ -20,18 +19,18 @@
 #define FROG_TOUNGUE_PAD 25
 
 typedef struct _Frog {
-	float x, y;
-	char nextColor, color;
-	float shift, tongueShift;
-	double forwardX;
-	double forwardY;
-	double rotation;
-	bool isShooted;
-	Animation eyesAnim;
+  float x, y;
+  unsigned char nextColor, color;
+  float shift, tongueShift;
+  double forwardX;
+  double forwardY;
+  double rotation;
+  bool isShooted;
+  Animation eyesAnim;
 } Frog;
 
-void Frog_Init(Frog*, float, float);
-void Frog_Rotate(Frog*, int, int);
-void Frog_Draw(Frog*, bool);
+void Frog_Init(Frog *, float, float);
+void Frog_Rotate(Frog *, int, int);
+void Frog_Draw(Frog *, bool);
 
 #endif
