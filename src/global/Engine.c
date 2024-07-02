@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <SDL_mixer.h>
 
 engine_t engine;
 
@@ -45,7 +46,7 @@ int Engine_Init() {
   engine.volMus = 1.0f;
   engine.volSnd = 1.0f;
 
-  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
     Engine_PushError("SDL.dll graphics library initialization error:",
                      SDL_GetError());
     return 0;
@@ -56,14 +57,6 @@ int Engine_Init() {
     Engine_PushError("SDL_Image.dll initialization error:", IMG_GetError());
     return 0;
   }
-
-  /*
-   if (!BASS_Init(-1, MUSIC_FREQUENCY, BASS_DEVICE_STEREO, 0, NULL)) {
-       Engine_PushErrorCode("Bass.dll initialization error",
-                               BASS_ErrorGetCode());
-       return 0;
-   }
-   */
 
   return 1;
 }
@@ -97,8 +90,12 @@ void Engine_Destroy() {
   BASS_MusicFree(engine.music);
   */
 
+  Mix_FreeMusic(engine.music);
+  engine.music = NULL;
+
   SDL_Quit();
   IMG_Quit();
+  Mix_Quit();
   // BASS_Free();
 }
 
@@ -546,38 +543,27 @@ int Engine_MusicLoad(const char *fileName) {
   return 1;
 }
 
-HSAMPLE Engine_SoundLoad(const char *fileName) {
-  (void)fileName;
-  /*
-  HSAMPLE sound = BASS_SampleLoad(FALSE, fileName, 0, 0, 65535, 0);
-
+Mix_Music *Engine_SoundLoad(const char *fileName) {
+  Mix_Music *sound = Mix_LoadMUS(fileName);
   if (!sound) {
-    Engine_PushErrorFileCode(fileName, BASS_ErrorGetCode());
+    Engine_PushErrorFile(fileName, Mix_GetError());
     return 0;
   }
 
-
   return sound;
-  */
-  return 0;
 }
 
-int Engine_SoundsLoad(const char **files, int n) {
-  (void)files;
-  (void)n;
-  return 1;
-  // TODO: Fix sound
-  /*
+int Engine_SoundsLoad(const char **files, uint32_t n) {
   if (n <= 0)
     return 0;
 
-  engine.sounds = (HSAMPLE *)malloc(sizeof(HSAMPLE *) * n);
+  engine.sounds = (Mix_Music **)malloc(sizeof(Mix_Music *) * n);
   if (!engine.sounds) {
     Engine_PushError("Critical Error!", "Out of memory.");
     return 0;
   }
 
-  for (int i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; i++) {
     char path[STR_PATH_BUFFER_SIZE];
     sprintf(path, "%s/%s", SOUND_FOLDER, files[i]);
 
@@ -588,7 +574,6 @@ int Engine_SoundsLoad(const char **files, int n) {
   engine.soundsLen = n;
 
   return 1;
-  */
 }
 
 HSTREAM Engine_SoundSfxLoad(const char *fileName) {
@@ -637,7 +622,7 @@ int Engine_SoundsSfxLoad(const char **files, int n) {
     */
 }
 
-HSAMPLE Engine_GetSoundSample(unsigned int soundID) {
+HSAMPLE Engine_GetSoundSample(uint32_t soundID) {
   if (soundID >= engine.soundsLen)
     return 0;
 
@@ -658,19 +643,13 @@ void Engine_PlayMusic(int musicID) {
   */
 }
 
-void Engine_StopMusic() { /*BASS_ChannelStop(engine.music);*/ }
+void Engine_StopMusic() { Mix_PauseMusic(); }
 
-void Engine_PlaySound(int soundID) {
-  (void)soundID;
-  /*
-  if (soundID < 0 || soundID >= engine.soundsLen)
+void Engine_PlaySound(uint32_t soundID) {
+  if (soundID >= engine.soundsLen)
     return;
 
-  HCHANNEL ch = BASS_SampleGetChannel(engine.sounds[soundID], FALSE);
-
-  BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, engine.volSnd);
-  BASS_ChannelPlay(ch, FALSE);
-  */
+  Mix_PlayMusic(engine.sounds[soundID], 1);
 }
 
 void Engine_StopSound(int soundID) {

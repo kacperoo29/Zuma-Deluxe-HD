@@ -5,10 +5,8 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-// #include <bass.h>
-// #include <bass_fx.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdbool.h>
-#include <stdio.h>
 
 #define STR_ERR_BUFFER_SIZE 128
 #define STR_PATH_BUFFER_SIZE 255
@@ -63,9 +61,9 @@ typedef struct {
   float volMus;
   float volSnd;
 
-  HMUSIC music;
+  Mix_Music *music;
   unsigned int soundsLen;
-  HSAMPLE *sounds;
+  Mix_Music **sounds;
   unsigned int soundsSfxLen;
   HSTREAM *soundsSfx;
 } engine_t;
@@ -107,15 +105,15 @@ void Engine_DrawTextExtScale(const char *str, int fontID, float scale,
 /* === Sound and Music === */
 int Engine_MusicLoad(const char *);
 
-HSAMPLE Engine_SoundLoad(const char *);
+Mix_Music *Engine_SoundLoad(const char *);
 HSTREAM Engine_SoundSfxLoad(const char *);
-int Engine_SoundsLoad(const char **, int);
+int Engine_SoundsLoad(const char **, uint32_t);
 int Engine_SoundsSfxLoad(const char **, int);
 HSAMPLE Engine_GetSoundSample(unsigned int);
 
 void Engine_PlayMusic(int);
 void Engine_StopMusic();
-void Engine_PlaySound(int);
+void Engine_PlaySound(uint32_t);
 void Engine_StopSound(int);
 void Engine_PlaySoundSfxPitch(int, float);
 void Engine_StopSoundSfx(int);

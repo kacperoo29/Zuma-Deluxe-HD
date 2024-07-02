@@ -12,16 +12,23 @@ add_executable(
     ${SOURCES}
 )
 
-
 if(USE_VENDORED_LIBS)
   set(SDL2IMAGE_SAMPLES OFF)
   set(SDL2IMAGE_VENDORED ON)
+  set(SDL2IMAGE_INSTALL OFF)
+
+  set(SDL2MIXER_SAMPLES OFF)
+  set(SDL2MIXER_VENDORED ON)
+  set(SDL2MIXER_INSTALL OFF)
+
   add_subdirectory(3rdparty/libexpat/expat)
   add_subdirectory(3rdparty/SDL)
   add_subdirectory(3rdparty/SDL_image)
+  add_subdirectory(3rdparty/SDL_mixer)
 else()
   find_package(SDL2 REQUIRED)
   find_package(SDL2_image REQUIRED)
+  find_package(SDL2_mixer REQUIRED)
   find_package(expat REQUIRED)
 endif()
 
@@ -31,6 +38,7 @@ target_link_libraries(
     SDL2::SDL2main
     SDL2::SDL2
     SDL2_image::SDL2_image
+    SDL2_mixer::SDL2_mixer
 
     expat
 
