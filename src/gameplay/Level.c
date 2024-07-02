@@ -1,5 +1,7 @@
 #include "Level.h"
 
+#include <stdint.h>
+
 levelMgr_t levelMgr;
 int xmlDepth;
 
@@ -214,7 +216,7 @@ int LevelMgr_LoadLevels(const char *fileName) {
   int done;
 
   char path[STR_PATH_BUFFER_SIZE];
-  sprintf(path, "%s\\%s", PATH_LEVEL, fileName);
+  sprintf(path, "%s/%s", PATH_LEVEL, fileName);
 
   char *buff = malloc(XML_BUFF_SIZE);
   if (!buff) {
@@ -224,7 +226,7 @@ int LevelMgr_LoadLevels(const char *fileName) {
 
   FILE *fp = fopen(path, "r");
   if (!fp) {
-    Engine_PushErrorFile(path, "Не удалось открыть файл!");
+    Engine_PushErrorFile(path, "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ!");
     return 0;
   }
 
@@ -363,7 +365,7 @@ int LevelMgr_Free() {
 int Level_Load(Level *level) {
   char path[STR_PATH_BUFFER_SIZE];
 
-  sprintf(path, "%s\\%s\\%s.jpg", PATH_LEVEL,
+  sprintf(path, "%s/%s/%s.jpg", PATH_LEVEL,
           levelMgr.graphics[level->graphicsID].id,
           levelMgr.graphics[level->graphicsID].textureFile);
   level->texture = Engine_TextureLoad(path);
@@ -373,7 +375,7 @@ int Level_Load(Level *level) {
   level->textureTopLayer = NULL;
   if (!(strcmp(levelMgr.graphics[level->graphicsID].textureTopLayerFile,
                "none") == 0)) {
-    sprintf(path, "%s\\%s\\%s.png", PATH_LEVEL,
+    sprintf(path, "%s/%s/%s.png", PATH_LEVEL,
             levelMgr.graphics[level->graphicsID].id,
             levelMgr.graphics[level->graphicsID].textureTopLayerFile);
     level->textureTopLayer = Engine_TextureLoad(path);
@@ -381,7 +383,7 @@ int Level_Load(Level *level) {
 
   level->spiral2 = NULL;
 
-  sprintf(path, "%s\\%s\\%s.dat", PATH_LEVEL,
+  sprintf(path, "%s/%s/%s.dat", PATH_LEVEL,
           levelMgr.graphics[level->graphicsID].id,
           levelMgr.graphics[level->graphicsID].spiralFile);
   FILE *file = fopen(path, "rb");
@@ -389,14 +391,14 @@ int Level_Load(Level *level) {
     return 0;
 
   fseek(file, 0x10, SEEK_SET);
-  long count;
-  fread(&count, sizeof(long), 1, file);
+  uint32_t count;
+  fread(&count, sizeof(uint32_t), 1, file);
   fseek(file, 0x14 + count * 10, SEEK_SET);
 
-  long c;
+  uint32_t c;
   float cx, cy;
 
-  fread(&c, sizeof(long), 1, file);
+  fread(&c, sizeof(uint32_t), 1, file);
   fread(&cx, sizeof(float), 1, file);
   fread(&cy, sizeof(float), 1, file);
 
@@ -406,8 +408,7 @@ int Level_Load(Level *level) {
   level->spiralLen = c - 1;
   level->spiral = malloc(sizeof(SpiralDot) * level->spiralLen);
 
-  long i;
-  for (i = 0; i < level->spiralLen; i++) {
+  for (size_t i = 0; i < level->spiralLen; i++) {
     char t1, t2, x, y;
     fread(&t1, 1, 1, file);
     fread(&t2, 1, 1, file);
@@ -449,7 +450,7 @@ void Level_DrawDebug(Level *lvl) {
   sx = (104 + lvl->spiralStart.x) * engine.scale_x;
   sy = lvl->spiralStart.y * engine.scale_y;
   SDL_SetRenderDrawColor(engine.render, 255, 255, 255, 160);
-  for (int i = 0; i < lvl->spiralLen; i++) {
+  for (size_t i = 0; i < lvl->spiralLen; i++) {
     if (lvl->spiral[i].t1)
       SDL_SetRenderDrawColor(engine.render, 0, 255, 0, 255);
     else

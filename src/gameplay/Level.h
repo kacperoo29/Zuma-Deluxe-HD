@@ -4,12 +4,13 @@
 #include <expat.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "../global/Engine.h"
 #include "../global/Enums.h"
 
 #define PATH_LEVEL "levels"
-#define STAGE_COUNT 1
+#define STAGE_COUNT 24
 #define BUFF_SIZE 48
 
 #define XML_BUFF_SIZE 32678
@@ -55,7 +56,7 @@ typedef struct _Level {
   SDL_Texture *texture;
   SDL_Texture *textureTopLayer;
 
-  int spiralLen;
+  size_t spiralLen;
   SpiralDot *spiral;
   SDL_FPoint spiralStart;
 

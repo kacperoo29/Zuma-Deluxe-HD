@@ -109,7 +109,7 @@ void Game_Init(Game *game, int lvlID, int difficulty) {
 
   game->finishPos.x = (game->lvl->spiralStart.x + 104) * engine.scale_x;
   game->finishPos.y = game->lvl->spiralStart.y * engine.scale_y;
-  for (int i = 0; i < game->lvl->spiralLen; i++) {
+  for (size_t i = 0; i < game->lvl->spiralLen; i++) {
     game->finishPos.x += game->lvl->spiral[i].dx * engine.scale_x;
     game->finishPos.y += game->lvl->spiral[i].dy * engine.scale_y;
   }

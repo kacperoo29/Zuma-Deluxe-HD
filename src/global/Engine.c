@@ -156,7 +156,7 @@ int Engine_TexturesLoad(const char **files, int n) {
 
   char path[STR_PATH_BUFFER_SIZE];
   for (int i = 0; i < n; i++) {
-    sprintf(path, "%s\\%s", TEXTURE_FOLDER, files[i]);
+    sprintf(path, "%s/%s", TEXTURE_FOLDER, files[i]);
 
     engine.textures[i] = Engine_TextureLoad(path);
     if (!engine.textures[i])
@@ -194,14 +194,14 @@ Font *Engine_FontLoad(const char *fileName) {
 
   char path[STR_PATH_BUFFER_SIZE];
 
-  sprintf(path, "%s\\%s.png", FONT_FOLDER, fileName);
+  sprintf(path, "%s/%s.png", FONT_FOLDER, fileName);
   font->texture = Engine_TextureLoad(path);
   if (!font->texture) {
     Engine_PushErrorFile(path, "");
     return NULL;
   }
 
-  sprintf(path, "%s\\%s.txt", FONT_FOLDER, fileName);
+  sprintf(path, "%s/%s.txt", FONT_FOLDER, fileName);
   FILE *file = fopen(path, "r");
   if (!file) {
     Engine_PushErrorFile(path, "");
@@ -531,7 +531,7 @@ void Engine_DrawTextExtScale(const char *str, int fontID, float scale,
 
 int Engine_MusicLoad(const char *fileName) {
   char path[STR_PATH_BUFFER_SIZE];
-  sprintf(path, "%s\\%s", MUSIC_FOLDER, fileName);
+  sprintf(path, "%s/%s", MUSIC_FOLDER, fileName);
   /*
     engine.music =
         BASS_MusicLoad(FALSE, path, 0, 0, BASS_SAMPLE_LOOP, MUSIC_FREQUENCY);
@@ -563,6 +563,11 @@ HSAMPLE Engine_SoundLoad(const char *fileName) {
 }
 
 int Engine_SoundsLoad(const char **files, int n) {
+  (void)files;
+  (void)n;
+  return 1;
+  // TODO: Fix sound
+  /*
   if (n <= 0)
     return 0;
 
@@ -574,7 +579,7 @@ int Engine_SoundsLoad(const char **files, int n) {
 
   for (int i = 0; i < n; i++) {
     char path[STR_PATH_BUFFER_SIZE];
-    sprintf(path, "%s\\%s", SOUND_FOLDER, files[i]);
+    sprintf(path, "%s/%s", SOUND_FOLDER, files[i]);
 
     engine.sounds[i] = Engine_SoundLoad(path);
     if (!engine.sounds[i])
@@ -583,6 +588,7 @@ int Engine_SoundsLoad(const char **files, int n) {
   engine.soundsLen = n;
 
   return 1;
+  */
 }
 
 HSTREAM Engine_SoundSfxLoad(const char *fileName) {
@@ -603,26 +609,32 @@ HSTREAM Engine_SoundSfxLoad(const char *fileName) {
 }
 
 int Engine_SoundsSfxLoad(const char **files, int n) {
-  if (n <= 0)
-    return 0;
-
-  engine.soundsSfx = (HSTREAM *)malloc(sizeof(HSTREAM *) * n);
-  if (!engine.soundsSfx) {
-    Engine_PushError("Critical Error!", "Out of memory.");
-    return 0;
-  }
-
-  for (int i = 0; i < n; i++) {
-    char path[STR_PATH_BUFFER_SIZE];
-    sprintf(path, "%s\\%s", SOUND_FOLDER, files[i]);
-
-    engine.soundsSfx[i] = Engine_SoundSfxLoad(path);
-    if (!engine.soundsSfx[i])
-      return 0;
-  }
-  engine.soundsSfxLen = n;
-
+  (void)files;
+  (void)n;
   return 1;
+  // TODO: Sound
+  /*
+    if (n <= 0)
+      return 0;
+
+    engine.soundsSfx = (HSTREAM *)malloc(sizeof(HSTREAM *) * n);
+    if (!engine.soundsSfx) {
+      Engine_PushError("Critical Error!", "Out of memory.");
+      return 0;
+    }
+
+    for (int i = 0; i < n; i++) {
+      char path[STR_PATH_BUFFER_SIZE];
+      sprintf(path, "%s/%s", SOUND_FOLDER, files[i]);
+
+      engine.soundsSfx[i] = Engine_SoundSfxLoad(path);
+      if (!engine.soundsSfx[i])
+        return 0;
+    }
+    engine.soundsSfxLen = n;
+
+    return 1;
+    */
 }
 
 HSAMPLE Engine_GetSoundSample(unsigned int soundID) {

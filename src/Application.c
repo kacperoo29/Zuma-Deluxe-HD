@@ -34,12 +34,15 @@ static int ApplicationZuma_LoadResources(void) {
     return 3;
   if (!Engine_FontsLoad(filesFonts, FONTS_COUNT))
     return 4;
+    // TODO: Sound 
+   /* 
   if (!Engine_SoundsLoad(filesSounds, SOUNDS_COUNT))
     return 5;
   if (!Engine_SoundsSfxLoad(filesSoundsSfx, SOUNDS_SFX_COUNT))
     return 6;
   if (!Engine_MusicLoad(fileMusic))
     return 7;
+    */
 
   if (!LevelMgr_LoadLevels("levels.xml"))
     return 8;
@@ -48,7 +51,7 @@ static int ApplicationZuma_LoadResources(void) {
 }
 
 static int ApplicationZuma_ShowStartupImage(void) {
-  SDL_Texture *texDisc = Engine_TextureLoad("images\\disclaimer.jpg");
+  SDL_Texture *texDisc = Engine_TextureLoad("images/disclaimer.jpg");
   if (!texDisc)
     return 10;
 

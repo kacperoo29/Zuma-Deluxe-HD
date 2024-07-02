@@ -1,9 +1,9 @@
 .vscode
-.gitignore
 CMakeFiles
 lib
 bin
 compile.bat
 Makefile
 build
+.cache
 
