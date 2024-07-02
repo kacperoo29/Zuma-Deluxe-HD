@@ -17,6 +17,7 @@ A remake of the legendary 2003 PopCap game with improved textures and support fo
 * [SDL2 	   2.26.5](https://www.libsdl.org)
 * [SDL2_Image 	2.6.3](https://www.libsdl.org/projects/SDL_image)
 * [Expat 		2.5.0](https://github.com/libexpat/libexpat)
+* SDL_mixer
 
 ## 🛠️ Build via CMake
 ```
@@ -33,6 +34,3 @@ Thanks to [hclxing](https://hclxing.wordpress.com/2017/06/27/reverse-engineering
 
 ## 📃 License 
 Source code is under MIT License, but all assets (in content folder) belong to [PopCap and EA games](https://www.ea.com/ea-studios/popcap)
-
-## 10.04.2023 Status
-Currently project framework is under reconstruction, check ["api-rework" branch](https://github.com/GalaxyShad/Zuma-Deluxe-HD/tree/api-rework).
