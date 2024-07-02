@@ -1,5 +1,8 @@
 #include "Engine.h"
-#include <SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
+
+#define SOUNDS_CHANNEL 2
+#define SFX_CHANNEL 4
 
 engine_t engine;
 
@@ -52,7 +55,20 @@ int Engine_Init() {
     return 0;
   }
 
-  int flags = IMG_INIT_JPG | IMG_INIT_PNG;
+  int flags = MIX_INIT_OGG | MIX_INIT_MP3;
+  if (!(Mix_Init(flags) & flags)) {
+    Engine_PushError("SDL_mixer library initialization error:", Mix_GetError());
+    return 0;
+  }
+
+  if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 8, 4096) < 0) {
+    Engine_PushError("SDL_mixer library initialization error:", Mix_GetError());
+    return 0;
+  }
+
+  Mix_AllocateChannels(16);
+
+  flags = IMG_INIT_JPG | IMG_INIT_PNG;
   if (!(IMG_Init(flags) & flags)) {
     Engine_PushError("SDL_Image.dll initialization error:", IMG_GetError());
     return 0;
@@ -78,25 +94,25 @@ void Engine_Destroy() {
   engine.render = NULL;
 
   /* Sound and music */
-  /*
-  for (int i = 0; i < engine.soundsLen; i++)
-    BASS_SampleFree(engine.sounds[i]);
+  for (size_t i = 0; i < engine.soundsLen; i++) {
+    Mix_FreeChunk(engine.sounds[i]);
+  }
   free(engine.sounds);
+  engine.sounds = NULL;
 
-  for (int i = 0; i < engine.soundsSfxLen; i++)
-    BASS_StreamFree(engine.soundsSfx[i]);
+  for (size_t i = 0; i < engine.soundsSfxLen; i++) {
+    Mix_FreeChunk(engine.soundsSfx[i]);
+  }
   free(engine.soundsSfx);
-
-  BASS_MusicFree(engine.music);
-  */
+  engine.soundsSfx = NULL;
 
   Mix_FreeMusic(engine.music);
   engine.music = NULL;
 
+  Mix_CloseAudio();
   SDL_Quit();
   IMG_Quit();
   Mix_Quit();
-  // BASS_Free();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -529,22 +545,17 @@ void Engine_DrawTextExtScale(const char *str, int fontID, float scale,
 int Engine_MusicLoad(const char *fileName) {
   char path[STR_PATH_BUFFER_SIZE];
   sprintf(path, "%s/%s", MUSIC_FOLDER, fileName);
-  /*
-    engine.music =
-        BASS_MusicLoad(FALSE, path, 0, 0, BASS_SAMPLE_LOOP, MUSIC_FREQUENCY);
-
-    if (engine.music == 0) {
-      Engine_PushErrorFileCode(fileName, BASS_ErrorGetCode());
-      return 0;
-    }
-
-    */
+  engine.music = Mix_LoadMUS(path);
+  if (!engine.music) {
+    Engine_PushErrorFile(fileName, Mix_GetError());
+    return 0;
+  }
 
   return 1;
 }
 
-Mix_Music *Engine_SoundLoad(const char *fileName) {
-  Mix_Music *sound = Mix_LoadMUS(fileName);
+Mix_Chunk *Engine_SoundLoad(const char *fileName) {
+  Mix_Chunk *sound = Mix_LoadWAV(fileName);
   if (!sound) {
     Engine_PushErrorFile(fileName, Mix_GetError());
     return 0;
@@ -557,7 +568,7 @@ int Engine_SoundsLoad(const char **files, uint32_t n) {
   if (n <= 0)
     return 0;
 
-  engine.sounds = (Mix_Music **)malloc(sizeof(Mix_Music *) * n);
+  engine.sounds = (Mix_Chunk **)malloc(sizeof(Mix_Chunk *) * n);
   if (!engine.sounds) {
     Engine_PushError("Critical Error!", "Out of memory.");
     return 0;
@@ -576,71 +587,50 @@ int Engine_SoundsLoad(const char **files, uint32_t n) {
   return 1;
 }
 
-HSTREAM Engine_SoundSfxLoad(const char *fileName) {
-  (void)fileName;
-  /*
-  HSTREAM sound =
-      BASS_StreamCreateFile(FALSE, fileName, 0, 0, BASS_STREAM_DECODE);
-  sound = BASS_FX_TempoCreate(sound, BASS_SAMPLE_FX);
+Mix_Chunk *Engine_SoundSfxLoad(const char *fileName) {
+  Mix_Chunk *sound = Mix_LoadWAV(fileName);
 
   if (!sound) {
-    Engine_PushErrorFileCode(fileName, BASS_ErrorGetCode());
+    Engine_PushErrorFile(fileName, Mix_GetError());
     return 0;
   }
 
   return sound;
-  */
-  return 0;
 }
 
-int Engine_SoundsSfxLoad(const char **files, int n) {
-  (void)files;
-  (void)n;
+int Engine_SoundsSfxLoad(const char **files, uint32_t n) {
+  if (n <= 0)
+    return 0;
+
+  engine.soundsSfx = (Mix_Chunk **)malloc(sizeof(Mix_Chunk *) * n);
+  if (!engine.soundsSfx) {
+    Engine_PushError("Critical Error!", "Out of memory.");
+    return 0;
+  }
+
+  for (size_t i = 0; i < n; i++) {
+    char path[STR_PATH_BUFFER_SIZE];
+    sprintf(path, "%s/%s", SOUND_FOLDER, files[i]);
+
+    engine.soundsSfx[i] = Engine_SoundSfxLoad(path);
+    if (!engine.soundsSfx[i])
+      return 0;
+  }
+  engine.soundsSfxLen = n;
+
   return 1;
-  // TODO: Sound
-  /*
-    if (n <= 0)
-      return 0;
-
-    engine.soundsSfx = (HSTREAM *)malloc(sizeof(HSTREAM *) * n);
-    if (!engine.soundsSfx) {
-      Engine_PushError("Critical Error!", "Out of memory.");
-      return 0;
-    }
-
-    for (int i = 0; i < n; i++) {
-      char path[STR_PATH_BUFFER_SIZE];
-      sprintf(path, "%s/%s", SOUND_FOLDER, files[i]);
-
-      engine.soundsSfx[i] = Engine_SoundSfxLoad(path);
-      if (!engine.soundsSfx[i])
-        return 0;
-    }
-    engine.soundsSfxLen = n;
-
-    return 1;
-    */
 }
 
-HSAMPLE Engine_GetSoundSample(uint32_t soundID) {
+Mix_Chunk *Engine_GetSoundSample(uint32_t soundID) {
   if (soundID >= engine.soundsLen)
     return 0;
 
   return engine.sounds[soundID];
 }
 
-void Engine_PlayMusic(int musicID) {
+void Engine_PlayMusic(uint32_t musicID) {
   (void)musicID;
-  /*
-  if (!BASS_ChannelIsActive(engine.music)) {
-    BASS_ChannelSetAttribute(engine.music, BASS_ATTRIB_VOL, engine.volMus);
-    BASS_ChannelPlay(engine.music, FALSE);
-  }
-
-  BASS_ChannelSetPosition(engine.music, MAKELONG(musicID, 0),
-                          BASS_POS_MUSIC_ORDER);
-
-  */
+  Mix_FadeInMusic(engine.music, -1, 1000);
 }
 
 void Engine_StopMusic() { Mix_PauseMusic(); }
@@ -649,32 +639,27 @@ void Engine_PlaySound(uint32_t soundID) {
   if (soundID >= engine.soundsLen)
     return;
 
-  Mix_PlayMusic(engine.sounds[soundID], 1);
+  Mix_PlayChannel(SOUNDS_CHANNEL, engine.sounds[soundID], 1);
 }
 
-void Engine_StopSound(int soundID) {
-  (void)soundID;
-  /* if (soundID < 0 || soundID >= engine.soundsLen)
-     return;
+void Engine_StopSound(uint32_t soundID) {
+  if (soundID >= engine.soundsLen)
+    return;
 
-   BASS_SampleStop(engine.sounds[soundID]);*/
+  Mix_HaltChannel(SOUNDS_CHANNEL);
 }
 
 void Engine_PlaySoundSfxPitch(int soundID, float pitch) {
-  (void)soundID;
   (void)pitch;
-  /*
-  BASS_ChannelSetAttribute(engine.soundsSfx[soundID], BASS_ATTRIB_TEMPO_PITCH,
-                           pitch);
-  BASS_ChannelSetAttribute(engine.soundsSfx[soundID], BASS_ATTRIB_VOL,
-                           engine.volSnd);
-  BASS_ChannelPlay(engine.soundsSfx[soundID], TRUE);
-  */
+  // TODO: pitch
+  Mix_VolumeChunk(engine.soundsSfx[soundID], MIX_MAX_VOLUME * engine.volMus);
+  Mix_PlayChannel(SFX_CHANNEL, engine.soundsSfx[soundID], 1);
 }
 
 void Engine_StopSoundSfx(int soundID) {
   (void)soundID;
-  // BASS_ChannelStop(engine.soundsSfx[soundID]);
+
+  Mix_HaltChannel(SFX_CHANNEL);
 }
 
 /////////////////////////////////////////////////////////////////////////

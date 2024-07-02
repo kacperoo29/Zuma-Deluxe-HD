@@ -2,7 +2,6 @@
 
 #include "global/Consts.h"
 #include "global/Engine.h"
-#include "global/Enums.h"
 
 #include "gameplay/Game.h"
 #include "menu/MenuMgr.h"
@@ -34,15 +33,12 @@ static int ApplicationZuma_LoadResources(void) {
     return 3;
   if (!Engine_FontsLoad(filesFonts, FONTS_COUNT))
     return 4;
-    // TODO: Sound 
-   /* 
   if (!Engine_SoundsLoad(filesSounds, SOUNDS_COUNT))
     return 5;
   if (!Engine_SoundsSfxLoad(filesSoundsSfx, SOUNDS_SFX_COUNT))
     return 6;
   if (!Engine_MusicLoad(fileMusic))
     return 7;
-    */
 
   if (!LevelMgr_LoadLevels("levels.xml"))
     return 8;

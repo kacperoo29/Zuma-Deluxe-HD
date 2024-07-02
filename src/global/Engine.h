@@ -21,10 +21,6 @@
 #define WINDOW_WIDTH 1280.0
 #define WINDOW_HEIGHT 720.0
 
-typedef void *HMUSIC;
-typedef void *HSTREAM;
-typedef void *HSAMPLE;
-
 typedef struct _Font {
   SDL_Texture *texture;
   int charsLen;
@@ -63,9 +59,9 @@ typedef struct {
 
   Mix_Music *music;
   unsigned int soundsLen;
-  Mix_Music **sounds;
+  Mix_Chunk **sounds;
   unsigned int soundsSfxLen;
-  HSTREAM *soundsSfx;
+  Mix_Chunk **soundsSfx;
 } engine_t;
 
 extern engine_t engine;
@@ -105,16 +101,16 @@ void Engine_DrawTextExtScale(const char *str, int fontID, float scale,
 /* === Sound and Music === */
 int Engine_MusicLoad(const char *);
 
-Mix_Music *Engine_SoundLoad(const char *);
-HSTREAM Engine_SoundSfxLoad(const char *);
+Mix_Chunk *Engine_SoundLoad(const char *);
+Mix_Chunk *Engine_SoundSfxLoad(const char *);
 int Engine_SoundsLoad(const char **, uint32_t);
-int Engine_SoundsSfxLoad(const char **, int);
-HSAMPLE Engine_GetSoundSample(unsigned int);
+int Engine_SoundsSfxLoad(const char **, uint32_t);
+Mix_Chunk *Engine_GetSoundSample(uint32_t);
 
-void Engine_PlayMusic(int);
+void Engine_PlayMusic(uint32_t);
 void Engine_StopMusic();
 void Engine_PlaySound(uint32_t);
-void Engine_StopSound(int);
+void Engine_StopSound(uint32_t);
 void Engine_PlaySoundSfxPitch(int, float);
 void Engine_StopSoundSfx(int);
 

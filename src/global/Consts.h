@@ -92,6 +92,6 @@ const char *filesFonts[FONTS_COUNT] = {
     "nativealienextended18",
 };
 
-const char fileMusic[9] = "zuma.mo3";
+const char fileMusic[9] = "zuma.ogg";
 
 #endif
