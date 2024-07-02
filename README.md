@@ -17,16 +17,12 @@ A remake of the legendary 2003 PopCap game with improved textures and support fo
 * [SDL2 	   2.26.5](https://www.libsdl.org)
 * [SDL2_Image 	2.6.3](https://www.libsdl.org/projects/SDL_image)
 * [Expat 		2.5.0](https://github.com/libexpat/libexpat)
-* SDL_mixer
+* [SDL_mixer 2.6.3](https://www.libsdl.org/projects/SDL_mixer)
 
 ## 🛠️ Build via CMake
 ```
-CMake -G <your generator>
-```
-
-## 🛠️ Build via console
-```
-<your compiler> src\*.c -I include\ -o bin\Zuma.exe -lSDL2 -lSDL2main -lSDL2_Image -llibexpat -lm
+mkdir build && cd build
+cmake ..
 ```
 
 ## 🔗 Sources used
