@@ -4,7 +4,7 @@
 #define SOUNDS_CHANNEL 2
 #define SFX_CHANNEL 4
 
-engine_t engine;
+Engine engine;
 
 // ==== Common ==== //
 void Engine_PushError(const char *header, const char *main) {
@@ -66,7 +66,7 @@ int Engine_Init() {
     return 0;
   }
 
-  Mix_AllocateChannels(16);
+  Mix_AllocateChannels(8);
 
   flags = IMG_INIT_JPG | IMG_INIT_PNG;
   if (!(IMG_Init(flags) & flags)) {
@@ -631,6 +631,7 @@ Mix_Chunk *Engine_GetSoundSample(uint32_t soundID) {
 void Engine_PlayMusic(uint32_t musicID) {
   (void)musicID;
   Mix_FadeInMusic(engine.music, -1, 1000);
+  Mix_VolumeMusic(MIX_MAX_VOLUME * engine.volMus);
 }
 
 void Engine_StopMusic() { Mix_PauseMusic(); }
@@ -639,6 +640,7 @@ void Engine_PlaySound(uint32_t soundID) {
   if (soundID >= engine.soundsLen)
     return;
 
+  Mix_VolumeChunk(engine.sounds[soundID], MIX_MAX_VOLUME * engine.volSnd);
   Mix_PlayChannel(SOUNDS_CHANNEL, engine.sounds[soundID], 1);
 }
 
@@ -652,7 +654,7 @@ void Engine_StopSound(uint32_t soundID) {
 void Engine_PlaySoundSfxPitch(int soundID, float pitch) {
   (void)pitch;
   // TODO: pitch
-  Mix_VolumeChunk(engine.soundsSfx[soundID], MIX_MAX_VOLUME * engine.volMus);
+  Mix_VolumeChunk(engine.soundsSfx[soundID], MIX_MAX_VOLUME * engine.volSnd);
   Mix_PlayChannel(SFX_CHANNEL, engine.soundsSfx[soundID], 1);
 }
 

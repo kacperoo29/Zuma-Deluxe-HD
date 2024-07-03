@@ -3,8 +3,8 @@
 
 #include <expat.h>
 #include <stdbool.h>
-#include <string.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "../global/Engine.h"
 #include "../global/Enums.h"
@@ -89,9 +89,9 @@ typedef struct {
   Stage stages[STAGE_COUNT];
   int survivalLevelsLen;
   Level *survivalLevels;
-} levelMgr_t;
+} LevelMgr;
 
-extern levelMgr_t levelMgr;
+extern LevelMgr levelMgr;
 
 int LevelMgr_LoadLevels(const char *);
 int LevelMgr_SaveProgress();

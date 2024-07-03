@@ -62,9 +62,9 @@ typedef struct {
   Mix_Chunk **sounds;
   unsigned int soundsSfxLen;
   Mix_Chunk **soundsSfx;
-} engine_t;
+} Engine;
 
-extern engine_t engine;
+extern Engine engine;
 
 void Engine_PushError(const char *, const char *);
 void Engine_PushErrorCode(const char *, int);

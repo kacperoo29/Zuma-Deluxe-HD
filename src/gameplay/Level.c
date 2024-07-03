@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-levelMgr_t levelMgr;
+LevelMgr levelMgr;
 int xmlDepth;
 
 static void LevelParser_ParseGraphics(const char **attribute) {

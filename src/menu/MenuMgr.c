@@ -1,4 +1,5 @@
 #include "MenuMgr.h"
+#include <SDL_mixer.h>
 
 void Button_Init(Button *btn) {
   btn->state = BTN_IDLE;
@@ -567,12 +568,10 @@ void DialogueBox_UpdateOptions(DialogueBox *db) {
       engine.fullScr = false;
     }
   }
-  /*
-      if (Slider_IsDragging(&db->sliders[0])) {
-          BASS_ChannelSetAttribute(engine.music,
-              BASS_ATTRIB_VOL, engine.volMus);
-      }
-      */
+
+  if (Slider_IsDragging(&db->sliders[0])) {
+    Mix_VolumeMusic(MIX_MAX_VOLUME * engine.volMus);
+  }
 }
 
 DialogueBox *DialogueBox_CreateMenu() {
